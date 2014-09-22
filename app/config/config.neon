@@ -20,7 +20,31 @@ nette:
 	session:
 		expiration: 14 days
 
+	database:
+		default:
+			dsn: "mysql:host=localhost;dbname=memed"
+			user: "root"
+			password: "hera"
+			options: [PDO::MYSQL_ATTR_COMPRESS = true]
+			debugger: true        # panel v debugger baru
+			explain: true        # explain dotazů v debugger bar
+			reflection: discovered  # nebo conventional nebo classname, výchozí je discovered
+			autowired: true
 
 services:
 	- App\Model\UserManager
+	- App\Model\Category(@nette.database.default.context, @memcache)
+
+	- Nette\Caching\Cache
+
+
+	memcacheStorage:
+		class: Nette\Caching\Storages\MemcachedStorage
+		autowired: no
+
+	memcache:
+		class: \Nette\Caching\Cache(@memcacheStorage)
+
 	router: App\RouterFactory()::createRouter
+
+
